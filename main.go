@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"log"
 	"strings"
-	imgconv "convert/Imgconv"
+	imgconv "github.com/AuroraSloan/gopherdojo00/Imgconv"
 )
 
 func main() {
