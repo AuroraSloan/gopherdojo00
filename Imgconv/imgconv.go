@@ -35,9 +35,10 @@ func (myImg convInfo) encode() image.Image {
 	var img image.Image
 	var err error
 
-	if myImg.in == ".jpg" {
+	switch myImg.in {
+	case ".jpg":
 		img, err = jpeg.Decode(bytes.NewReader(myImg.fileBytes))
-	} else if myImg.in == ".png" {
+	case ".png":
 		img, err = png.Decode(bytes.NewReader(myImg.fileBytes))
 	}
 	if (err != nil) {
@@ -60,9 +61,10 @@ func (myImg convInfo) decode(img image.Image) bytes.Buffer {
 	var buf bytes.Buffer
 	var err error
 
-	if myImg.out == ".jpg" {
+	switch myImg.out {
+	case ".jpg":
 		err = jpeg.Encode(&buf, img, nil)
-	} else if myImg.out == ".png" {
+	case ".png":
 		err = png.Encode(&buf, img)
 	}
 	if (err != nil) {
