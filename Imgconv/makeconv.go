@@ -17,23 +17,23 @@ import (
 	"bytes"
 )
 
-func MakeConversion(in string, out string, path string) (bool, error) {
+func MakeConversion(in string, out string, path string) error {
 	contentType, fileBytes, err := getImgInfo(path)
 	if err != nil {
-		return false, err
+		return err
 	}
 	if validConv := checkContentType(in, out, contentType, path); !validConv {
-		return false, nil
+		return nil
 	}
 
 	// Create convInfo type containing relevent path and image information
 	myImg := gatherInfo(in, out, path, fileBytes)
 
 	// Encodes the specified image to to an image.Image
-	encodedImg := myImg.encode()
+	decodedImg := myImg.decode()
 
 	// Decodes the specified type and writes it to a buffer
-	buf := myImg.decode(encodedImg)
+	buf := myImg.encode(decodedImg)
 
 	// Writes buffer from decoded image to the specified new image file
 	return createNewImage(buf, myImg.NewPath)
@@ -72,15 +72,15 @@ func checkContentType(in string, out string, contentType string, path string) bo
 }
 
 // Writes buffer from decoded image to the specified new image file.
-func createNewImage(buf bytes.Buffer, newPath string) (bool, error) {
+func createNewImage(buf bytes.Buffer, newPath string) error {
 	file, err := os.Create(newPath)
 	if (err != nil) {
-		return true, err
+		return err
 	}
 	_, err = buf.WriteTo(file)
 	file.Close()
 	if err != nil {
-		return true, err
+		return err
 	}
-	return true, nil
+	return nil
 }

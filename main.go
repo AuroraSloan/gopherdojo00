@@ -17,12 +17,9 @@ func main() {
 	err := filepath.WalkDir(dirPath, func(path string, file fs.DirEntry, err error) error {
 		checkErr(err, path, "no such file or directory")
 		if !file.IsDir() {
-			isValid, err := imgconv.MakeConversion(in, out, path)
+			err := imgconv.MakeConversion(in, out, path)
 			if err != nil {
 				log.Fatal(err)
-			}
-			if !isValid {
-				return nil
 			}
 		}
 		return nil
@@ -34,7 +31,7 @@ func main() {
 
 func checkErr(err error, path string, message string) {
 	if err != nil {
-		fmt.Println("error: %s: %s\n", path, message)
+		fmt.Printf("error: %s: %s\n", path, message)
 		os.Exit(1)
 	}
 }

@@ -31,7 +31,7 @@ func gatherInfo (in string, out string, oldPath string, fileBytes []byte) convIn
 }
 
 // Encodes the specified image to an image.Image
-func (myImg convInfo) encode() image.Image {
+func (myImg convInfo) decode() image.Image {
 	var img image.Image
 	var err error
 
@@ -57,7 +57,7 @@ func (myImg convInfo) encode() image.Image {
 }
 
 // Decodes the specified type and writes it to a buffer
-func (myImg convInfo) decode(img image.Image) bytes.Buffer {
+func (myImg convInfo) encode(img image.Image) bytes.Buffer {
 	var buf bytes.Buffer
 	var err error
 
