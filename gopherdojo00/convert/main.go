@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"io/fs"
-	"path/filepath"
-	"log"
-	"strings"
 	imgconv "github.com/AuroraSloan/gopherdojo00/Imgconv"
+	"io/fs"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 func main() {
@@ -45,7 +45,7 @@ func parseArgs() (string, string, string) {
 	if argc != 2 && argc != 4 {
 		fmt.Println("error: invalid argument")
 		os.Exit(1)
-	}else if argc == 2 {
+	} else if argc == 2 {
 		return ".jpg", ".png", os.Args[1]
 	}
 
