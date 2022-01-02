@@ -6,24 +6,24 @@ import (
 )
 
 func main() {
+	exit_status := 0
 	if len(os.Args) < 2 {
-		os.Exit(1)
+		print_file(os.Stdin, os.Stdout)
 	}
-	for i, filename := range os.Args {
-		if i == 0 {
-			continue
-		}
+	for _, filename := range os.Args[1:] {
 		if filename == "-" {
 			print_file(os.Stdin, os.Stdout)
 		} else {
 			src, err := os.Open(filename)
 			if err != nil {
-				os.Exit(1)
+				exit_status = 1
+				continue
 			}
 			defer src.Close()
 			print_file(src, os.Stdout)
 		}
 	}
+	os.Exit(exit_status)
 }
 
 func print_file(src io.Reader, dst io.Writer) {
