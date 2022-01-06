@@ -20,42 +20,32 @@ func TestConvert(t *testing.T) {
 	t.Parallel()
 	var imgConversions = []struct {
 		in, out, path string
+		want          bool
 	}{
-		{".jpg", ".png", "../testdata/images/jpgs/gopher.jpg"},
-		{".png", ".jpg", "../testdata/images/pngs/tokyotower.png"},
+		{".jpg", ".png", "../testdata/images/jpgs/gopher.jpg", true},
+		{".png", ".jpg", "../testdata/images/pngs/tokyotower.png", true},
+		{".png", ".jpg", "../testdata/images/jpgs/gopher.jpg", false},
+		{".jpg", ".png", "../testdata/images/pngs/tokyotower.png", false},
+		{".jpg", ".png", "convert_test.go", false},
 	}
 	for _, ic := range imgConversions {
-		t.Run("Valid Convert", func(t *testing.T) {
-			isValid, err := imgconv.Convert(ic.in, ic.out, ic.path)
+		t.Run("Convert", func(t *testing.T) {
+			got, err := imgconv.Convert(ic.in, ic.out, ic.path)
 			if err != nil {
 				t.Fatal(err)
-			} else if !isValid {
-				t.Error("Should return isValid.")
+			} else if got != ic.want {
+				t.Error("Convert output is incorrect")
 			}
-			oldPath := imagePath(ic.path)
-			newPath := oldPath.changePath(ic.in, ic.out)
-			contentType := checkOutputFile(t, newPath)
-			if contentType != ic.out {
-				t.Error("Output image does not match requested output")
-			}
-		})
-		t.Run("Invalid in / out", func(t *testing.T) {
-			isValid, err := imgconv.Convert(ic.out, ic.in, ic.path)
-			if err != nil {
-				t.Fatal(err)
-			} else if isValid {
-				t.Error("Should return !isValid.")
+			if got {
+				oldPath := imagePath(ic.path)
+				newPath := oldPath.changePath(ic.in, ic.out)
+				contentType := checkOutputFile(t, newPath)
+				if contentType != ic.out {
+					t.Error("Output image does not match requested output")
+				}
 			}
 		})
 	}
-	t.Run("Invalid image type", func(t *testing.T) {
-		isValid, err := imgconv.Convert(".jpg", ".png", "convert_test.go")
-		if err != nil {
-			t.Fatal(err)
-		} else if isValid {
-			t.Error("Should return !isValid.")
-		}
-	})
 	t.Run("Invalid file", func(t *testing.T) {
 		_, err := imgconv.Convert(".jpg", ".png", "../testdata/doesnotexist")
 		if err == nil {
