@@ -5,16 +5,16 @@ package imgconv
 
 import (
 	"bytes"
+	"errors"
 	"image"
 	"image/color"
 	"image/draw"
 	"image/jpeg"
 	"image/png"
-	"log"
 	"strings"
 )
 
-// Type containing relevent path and image information
+// Type containing relevant path and image information
 type convInfo struct {
 	in        string
 	out       string
@@ -24,18 +24,27 @@ type convInfo struct {
 }
 
 // Creates convInfo type
-func gatherInfo(in string, out string, oldPath string, fileBytes []byte) convInfo {
+func gatherInfo(in string, out string, oldPath string, fileBytes []byte, contentType string) (convInfo, error) {
 
+	var imgTypes = map[string]string{
+		"image/jpeg": ".jpg",
+		"image/png":  ".png",
+		"image/bmp":  ".bmp",
+		"image/tiff": ".tiff",
+	}
+	if imgTypes[contentType] != in {
+		return convInfo{"", "", "", "", nil}, errors.New("-i= type does not match image content type")
+	}
 	// Create new file name
 	parts := strings.Split(oldPath, in)
 	newPath := parts[0] + out
 
-	// reutrn convInfo struct
-	return convInfo{in, out, oldPath, newPath, fileBytes}
+	// return convInfo struct
+	return convInfo{in, out, oldPath, newPath, fileBytes}, nil
 }
 
 // Encodes the specified image to an image.Image
-func (myImg convInfo) decode() image.Image {
+func (myImg convInfo) decode() (image.Image, error) {
 	var img image.Image
 	var err error
 
@@ -45,9 +54,11 @@ func (myImg convInfo) decode() image.Image {
 		img, err = jpeg.Decode(bytes.NewReader(myImg.fileBytes))
 	case ".png":
 		img, err = png.Decode(bytes.NewReader(myImg.fileBytes))
+	default:
+		err = errors.New("-i= type is not supported")
 	}
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	// Draw white background underneath the png image to make up for lack
@@ -56,14 +67,14 @@ func (myImg convInfo) decode() image.Image {
 		newImg := image.NewRGBA(img.Bounds())
 		draw.Draw(newImg, newImg.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
 		draw.Draw(newImg, newImg.Bounds(), img, img.Bounds().Min, draw.Over)
-		return newImg
+		return newImg, nil
 	}
 
-	return img
+	return img, nil
 }
 
 // Decodes the specified type and writes it to a buffer
-func (myImg convInfo) encode(img image.Image) bytes.Buffer {
+func (myImg convInfo) encode(img image.Image) (bytes.Buffer, error) {
 	var buf bytes.Buffer
 	var err error
 
@@ -73,9 +84,8 @@ func (myImg convInfo) encode(img image.Image) bytes.Buffer {
 		err = jpeg.Encode(&buf, img, nil)
 	case ".png":
 		err = png.Encode(&buf, img)
+	default:
+		err = errors.New("-o= type is not supported")
 	}
-	if err != nil {
-		log.Fatal(err)
-	}
-	return buf
+	return buf, err
 }

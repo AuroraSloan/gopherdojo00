@@ -21,7 +21,7 @@ func main() {
 
 		//convert image if the current file/path is not a directory
 		if !file.IsDir() {
-			_, err := imgconv.Convert(in, out, path)
+			err := imgconv.Convert(in, out, path)
 
 			//Exit program and in case of error from Convert
 			if err != nil {
@@ -61,12 +61,6 @@ func parseArgs() (string, string, string) {
 
 	//decide in and out based on args
 	in, out = setInOut()
-
-	//Exit failure if in and out match, or if they neither jpg or png
-	if in == out || (in != ".png" && out != ".png") || (in != ".jpg" && out != ".jpg") {
-		fmt.Printf("Either %s or %s conversion is not available\n", in, out)
-		os.Exit(1)
-	}
 
 	//return in type, out type, and directory path
 	return in, out, os.Args[3]
