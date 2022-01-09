@@ -46,7 +46,7 @@ func TestConvert(t *testing.T) {
 		t.Run("Convert", func(t *testing.T) {
 			err := imgconv.Convert(ic.in, ic.out, ic.path)
 			if err != nil && err.Error() != ic.want.Error() {
-				t.Error(err)
+				t.Fatal(err)
 			}
 			if err == nil {
 				oldPath := imagePath(ic.path)
@@ -58,24 +58,25 @@ func TestConvert(t *testing.T) {
 			}
 		})
 	}
-	t.Run("no perms", func(t *testing.T) {
-		err := imgconv.Convert(".jpg", ".png", "../testdata/noperms.jpg")
-		if err == nil {
-			t.Error("Should return err.")
-		}
-	})
-	t.Run("Invalid file", func(t *testing.T) {
-		err := imgconv.Convert(".jpg", ".png", "../testdata/doesnotexist")
-		if err == nil {
-			t.Error("Should return err.")
-		}
-	})
-	t.Run("can't create", func(t *testing.T) {
-		err := imgconv.Convert(".jpg", ".png", "../testdata/cantopen.jpg")
-		if err == nil {
-			t.Error("Should return err.")
-		}
-	})
+}
+
+func TestConvertErr(t *testing.T) {
+	t.Parallel()
+	var imgConversions = []struct {
+		in, out, path string
+	}{
+		{".jpg", ".png", "../testdata/noperms.jpg"},
+		{".jpg", ".png", "../testdata/doesnotexist"},
+		{".jpg", ".png", "../testdata/cantopen.jpg"},
+	}
+	for _, ic := range imgConversions {
+		t.Run("ConvertErr", func(t *testing.T) {
+			err := imgconv.Convert(ic.in, ic.out, ic.path)
+			if err == nil {
+				t.Error("Should return err.")
+			}
+		})
+	}
 }
 
 func checkOutputFile(t *testing.T, path string) string {

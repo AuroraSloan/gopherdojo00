@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"io"
 	"os"
 	"path/filepath"
@@ -30,9 +31,17 @@ func main() {
 }
 
 func ft_cat(src io.Reader, dst io.Writer) {
-	_, err := io.Copy(dst, src)
-	if err != nil {
-		print_err(err.Error())
+	reader := bufio.NewReader(src)
+	var err error
+	for err != io.EOF {
+		bytes, err := reader.ReadBytes('\n')
+		if err != nil {
+			if err != io.EOF {
+				print_err(err.Error())
+			}
+			break
+		}
+		dst.Write(bytes)
 	}
 }
 
