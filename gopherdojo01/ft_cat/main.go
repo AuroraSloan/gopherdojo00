@@ -23,8 +23,8 @@ func main() {
 				print_err(err.Error())
 				continue
 			}
-			defer src.Close()
 			ft_cat(src, os.Stdout)
+			src.Close()
 		}
 	}
 	os.Exit(exit_status)
