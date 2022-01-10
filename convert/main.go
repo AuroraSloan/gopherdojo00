@@ -1,7 +1,7 @@
 package main
 
 import (
-	imgconv "convert/imgconv"
+	imgconv "github.com/AuroraSloan/roadtomercari/convert/imgconv"
 	"fmt"
 	"io/fs"
 	"log"
